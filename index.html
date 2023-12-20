@@ -161,10 +161,11 @@
          const apiKey = 'YOUR_ALPHAVANTAGE_API_KEY'; // Replace with your Alpha Vantage API key
          const stockSymbol = document.getElementById('stockSymbol').value.toUpperCase();
          const url = `https://www.alphavantage.co/query?function=EARNINGS&symbol=${stockSymbol}&apikey=${apiKey}`;
+         let data = {};  
 
          try {
             const response = await fetch(url);
-            const data = await response.json();
+            data = await response.json();       
 
             const annualEarnings = parseFloat(data.annualEarnings[0].reportedEPS);
             // Calculate Growth Rate
@@ -180,7 +181,7 @@
             document.getElementById('inputs').style.display = 'block';
          } catch (error) {
             console.error('Error fetching data:', error);
-            document.getElementById('result').textContent = 'Failed to fetch data. Please try again.';
+            document.getElementById('result').textContent = `Failed to fetch data. Please try again. ${data?.Information}`;
          }
       }
 
