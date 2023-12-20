@@ -9,7 +9,11 @@
          font-family: Arial, sans-serif;
          background-color: #333;
          color: #eee;
-         margin: 20px;
+         margin: 0;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         height: 100vh;
       }
 
       h1 {
@@ -52,26 +56,107 @@
          margin-top: 20px;
          font-weight: bold;
       }
+
+      .calculator {
+         width: 80%;
+         max-width: 600px;
+         background-color: #222;
+         padding: 20px;
+         border-radius: 8px;
+         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .suggestions-container {
+         max-height: 200px;
+         /* Set a maximum height */
+         overflow-y: auto;
+         /* Enable vertical scrolling */
+         border: 1px solid #ccc;
+         border-radius: 4px;
+         background-color: #fff;
+      }
+
+      .suggestion {
+         cursor: pointer;
+         padding: 5px;
+      }
+
+      .suggestion:hover {
+         background-color: #eee;
+      }
    </style>
+
+
 </head>
 
 <body>
-   <h1>Stock Intrinsic Value Calculator</h1>
-   <label for="stockSymbol">US Stock Symbol:</label>
-   <input type="text" id="stockSymbol" placeholder="Enter stock symbol" required>
-   <button onclick="fetchStockData()">Get Intrinsic Value</button>
-   <div id="inputs" style="display: none;">
-      <label for="eps">Earnings per Share (EPS):</label>
-      <input type="number" id="eps" step="0.01" min="0" required><br>
-      <label for="growthRate">Growth Rate (%):</label>
-      <input type="number" id="growthRate" step="0.1" min="0" required><br>
-      <label for="discountRate">Discount Rate (%):</label>
-      <input type="number" id="discountRate" step="0.1" min="0" required><br>
-      <button onclick="calculateIntrinsicValue()">Calculate</button>
+   <div class="calculator">
+      <h1>Stock Intrinsic Value Calculator</h1>
+      <label for="stockSymbol">US Stock Symbol:</label>
+      <input type="text" id="stockSymbol" placeholder="Enter stock symbol" required>
+      <div class="suggestions-container">
+         <div id="suggestions"></div>
+      </div>
+      <button onclick="fetchStockData()">Get Intrinsic Value</button>
+      <div id="inputs" style="display: none;">
+         <label for="eps">Earnings per Share (EPS):</label>
+         <input type="number" id="eps" step="0.01" min="0" required><br>
+         <label for="growthRate">Growth Rate (%) (set according to your model):</label>
+         <input type="number" id="growthRate" step="0.1" min="0" required><br>
+         <label for="discountRate">Discount Rate (%) (set according to your model):</label>
+         <input type="number" id="discountRate" step="0.1" min="0" required><br>
+         <button onclick="calculateIntrinsicValue()">Calculate</button>
+      </div>
+      <p id="result"></p>
    </div>
-   <p id="result"></p>
 
    <script>
+
+      document.getElementById('stockSymbol').addEventListener('input', async function (event) {
+         const input = event.target.value.trim();
+
+         if (input.length >= 2) {
+            const suggestions = await getStockSuggestions(input);
+            displaySuggestions(suggestions);
+         } else {
+            clearSuggestions();
+         }
+      });
+
+      async function getStockSuggestions(query) {
+         const apiKey = 'YOUR_ALPHAVANTAGE_API_KEY'; // Replace with your Alpha Vantage API key
+         try {
+            const response = await fetch(`https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${query}&apikey=${apiKey}`);
+            const data = await response.json();
+
+            return data.bestMatches.map(match => match['1. symbol']);
+         } catch (error) {
+            console.error('Error fetching stock suggestions:', error);
+            return [];
+         }
+      }
+
+      function displaySuggestions(suggestions) {
+         const suggestionsContainer = document.getElementById('suggestions');
+         suggestionsContainer.innerHTML = '';
+
+         suggestions.forEach(symbol => {
+            const suggestionDiv = document.createElement('div');
+            suggestionDiv.textContent = symbol;
+            suggestionDiv.classList.add('suggestion');
+            suggestionDiv.addEventListener('click', () => {
+               document.getElementById('stockSymbol').value = symbol;
+               clearSuggestions();
+            });
+            suggestionsContainer.appendChild(suggestionDiv);
+         });
+      }
+
+      function clearSuggestions() {
+         document.getElementById('suggestions').innerHTML = '';
+      }
+
+
       async function fetchStockData() {
          const apiKey = 'YOUR_ALPHAVANTAGE_API_KEY'; // Replace with your Alpha Vantage API key
          const stockSymbol = document.getElementById('stockSymbol').value.toUpperCase();
@@ -84,7 +169,6 @@
             const annualEarnings = parseFloat(data.annualEarnings[0].reportedEPS);
             // Calculate Growth Rate
             const growthRate = calculateGrowthRate(data.annualEarnings);
-            debugger
             document.getElementById('growthRate').value = growthRate.toFixed(2) * 100;
 
             const discountRate = 0.1; // You can calculate or set this value based on your model
@@ -115,13 +199,19 @@
 
       function calculateIntrinsicValue() {
          const eps = parseFloat(document.getElementById('eps').value);
-         const growthRate = parseFloat(document.getElementById('growthRate').value) / 100;
-         const discountRate = parseFloat(document.getElementById('discountRate').value) / 100;
+         let growthRate = parseFloat(document.getElementById('growthRate').value) / 100;
+         let discountRate = parseFloat(document.getElementById('discountRate').value) / 100;
+
+         // Ensure discount rate is higher than growth rate
+         if (discountRate <= growthRate) {
+            discountRate = growthRate + 0.01; // Set a minimum difference between discount and growth rate
+            document.getElementById('discountRate').value = (discountRate * 100).toFixed(2);
+         }
 
          const intrinsicValue = (eps * (1 + growthRate)) / (discountRate - growthRate);
 
          const resultElement = document.getElementById('result');
-         resultElement.textContent = `The intrinsic value of the stock is: $${intrinsicValue.toFixed(2)}`;
+         resultElement.textContent = `The intrinsic value of the stock is: $${isFinite(intrinsicValue) ? intrinsicValue.toFixed(2) : 'N/A (Check Rates)'} `;
       }
    </script>
 </body>
