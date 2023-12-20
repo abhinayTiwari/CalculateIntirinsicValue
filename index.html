@@ -4,16 +4,17 @@
 <head>
    <meta charset="UTF-8">
    <title>Stock Intrinsic Value Calculator</title>
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
    <style>
       body {
-         font-family: Arial, sans-serif;
+         /* font-family: Arial, sans-serif; */
          background-color: #333;
          color: #eee;
-         margin: 0;
+         /* margin: 0;
          display: flex;
          justify-content: center;
          align-items: center;
-         height: 100vh;
+         height: 100vh; */
       }
 
       h1 {
@@ -58,12 +59,9 @@
       }
 
       .calculator {
-         width: 80%;
-         max-width: 600px;
-         background-color: #222;
-         padding: 20px;
          border-radius: 8px;
          box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+         background-color: #fff;
       }
 
       .suggestions-container {
@@ -89,25 +87,29 @@
 
 </head>
 
-<body>
-   <div class="calculator">
-      <h1>Stock Intrinsic Value Calculator</h1>
-      <label for="stockSymbol">US Stock Symbol:</label>
-      <input type="text" id="stockSymbol" placeholder="Enter stock symbol" required>
-      <div class="suggestions-container">
-         <div id="suggestions"></div>
+<body class="d-flex justify-content-center align-items-center min-vh-100">
+   <div class="container-lg">
+      <div class="calculator p-4">
+         <h1 class="text-center mb-4">Stock Intrinsic Value Calculator</h1>
+         <div class="mb-3">
+            <label for="stockSymbol" class="form-label">Stock Symbol:</label>
+            <input type="text" class="form-control" id="stockSymbol" placeholder="Enter stock symbol" required>
+         </div>
+         <div class="mb-3 position-relative">
+            <div id="suggestions" class="position-absolute bg-light border border-secondary rounded-3 d-none"></div>
+         </div>
+         <button onclick="fetchStockData()" class="btn btn-primary">Get Intrinsic Value</button>
+         <div id="inputs" style="display: none;">
+            <label for="eps">Earnings per Share (EPS):</label>
+            <input type="number" id="eps" step="0.01" min="0" required><br>
+            <label for="growthRate">Growth Rate (%) (set according to your model):</label>
+            <input type="number" id="growthRate" step="0.1" min="0" required><br>
+            <label for="discountRate">Discount Rate (%) (set according to your model):</label>
+            <input type="number" id="discountRate" step="0.1" min="0" required><br>
+            <button onclick="calculateIntrinsicValue()">Calculate</button>
+         </div>
+         <p id="result"></p>
       </div>
-      <button onclick="fetchStockData()">Get Intrinsic Value</button>
-      <div id="inputs" style="display: none;">
-         <label for="eps">Earnings per Share (EPS):</label>
-         <input type="number" id="eps" step="0.01" min="0" required><br>
-         <label for="growthRate">Growth Rate (%) (set according to your model):</label>
-         <input type="number" id="growthRate" step="0.1" min="0" required><br>
-         <label for="discountRate">Discount Rate (%) (set according to your model):</label>
-         <input type="number" id="discountRate" step="0.1" min="0" required><br>
-         <button onclick="calculateIntrinsicValue()">Calculate</button>
-      </div>
-      <p id="result"></p>
    </div>
 
    <script>
@@ -161,11 +163,11 @@
          const apiKey = 'YOUR_ALPHAVANTAGE_API_KEY'; // Replace with your Alpha Vantage API key
          const stockSymbol = document.getElementById('stockSymbol').value.toUpperCase();
          const url = `https://www.alphavantage.co/query?function=EARNINGS&symbol=${stockSymbol}&apikey=${apiKey}`;
-         let data = {};  
+         let data = {};
 
          try {
             const response = await fetch(url);
-            data = await response.json();       
+            data = await response.json();
 
             const annualEarnings = parseFloat(data.annualEarnings[0].reportedEPS);
             // Calculate Growth Rate
