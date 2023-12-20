@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <title>Stock Intrinsic Value Calculator</title>
+   <style>
+      body {
+         font-family: Arial, sans-serif;
+         background-color: #333;
+         color: #eee;
+         margin: 20px;
+      }
+
+      h1 {
+         text-align: center;
+      }
+
+      label {
+         display: block;
+         margin-bottom: 5px;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      button {
+         margin-bottom: 10px;
+         padding: 8px;
+         border: none;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+         width: 100%;
+         background-color: #444;
+         color: #eee;
+      }
+
+      button {
+         width: 100%;
+         background-color: #4CAF50;
+         color: white;
+         cursor: pointer;
+         transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+         background-color: #45a049;
+      }
+
+      #result {
+         margin-top: 20px;
+         font-weight: bold;
+      }
+   </style>
+</head>
+
+<body>
+   <h1>Stock Intrinsic Value Calculator</h1>
+   <label for="stockSymbol">US Stock Symbol:</label>
+   <input type="text" id="stockSymbol" placeholder="Enter stock symbol" required>
+   <button onclick="fetchStockData()">Get Intrinsic Value</button>
+   <div id="inputs" style="display: none;">
+      <label for="eps">Earnings per Share (EPS):</label>
+      <input type="number" id="eps" step="0.01" min="0" required><br>
+      <label for="growthRate">Growth Rate (%):</label>
+      <input type="number" id="growthRate" step="0.1" min="0" required><br>
+      <label for="discountRate">Discount Rate (%):</label>
+      <input type="number" id="discountRate" step="0.1" min="0" required><br>
+      <button onclick="calculateIntrinsicValue()">Calculate</button>
+   </div>
+   <p id="result"></p>
+
+   <script>
+      async function fetchStockData() {
+         const apiKey = 'YOUR_ALPHAVANTAGE_API_KEY'; // Replace with your Alpha Vantage API key
+         const stockSymbol = document.getElementById('stockSymbol').value.toUpperCase();
+         const url = `https://www.alphavantage.co/query?function=EARNINGS&symbol=${stockSymbol}&apikey=${apiKey}`;
+
+         try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            const annualEarnings = parseFloat(data.annualEarnings[0].reportedEPS);
+            // Calculate Growth Rate
+            const growthRate = calculateGrowthRate(data.annualEarnings);
+            debugger
+            document.getElementById('growthRate').value = growthRate.toFixed(2) * 100;
+
+            const discountRate = 0.1; // You can calculate or set this value based on your model
+
+            document.getElementById('eps').value = annualEarnings;
+            document.getElementById('growthRate').value = growthRate * 100;
+            document.getElementById('discountRate').value = discountRate * 100;
+
+            document.getElementById('inputs').style.display = 'block';
+         } catch (error) {
+            console.error('Error fetching data:', error);
+            document.getElementById('result').textContent = 'Failed to fetch data. Please try again.';
+         }
+      }
+
+      function calculateGrowthRate(earningsData) {
+         if (earningsData.length < 2) return 0; // Not enough data points for calculation
+
+         const latestEarnings = parseFloat(earningsData[0].reportedEPS);
+         const pastEarnings = parseFloat(earningsData[earningsData.length - 1].reportedEPS);
+
+         if (pastEarnings <= 0) return 0; // Prevent division by zero or negative values
+
+         const growthRate = Math.pow((latestEarnings / pastEarnings), 1 / (earningsData.length - 1)) - 1;
+
+         return growthRate;
+      }
+
+      function calculateIntrinsicValue() {
+         const eps = parseFloat(document.getElementById('eps').value);
+         const growthRate = parseFloat(document.getElementById('growthRate').value) / 100;
+         const discountRate = parseFloat(document.getElementById('discountRate').value) / 100;
+
+         const intrinsicValue = (eps * (1 + growthRate)) / (discountRate - growthRate);
+
+         const resultElement = document.getElementById('result');
+         resultElement.textContent = `The intrinsic value of the stock is: $${intrinsicValue.toFixed(2)}`;
+      }
+   </script>
+</body>
+
+</html>
