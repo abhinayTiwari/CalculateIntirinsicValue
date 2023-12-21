@@ -1,61 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-   <meta charset="UTF-8">
-   <title>Stock Intrinsic Value Calculator</title>
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+   <title>Animated Dynamic Form</title>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+      integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
    <style>
+      html,
       body {
-         /* font-family: Arial, sans-serif; */
-         background-color: #333;
-         color: #eee;
-         /* margin: 0;
-         display: flex;
-         justify-content: center;
-         align-items: center;
-         height: 100vh; */
+         height: 100%;
+         margin: 0;
+         background: rgb(2, 0, 36);
+         background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(149, 199, 20, 1) 0%, rgba(0, 212, 255, 1) 96%);
+
       }
 
-      h1 {
-         text-align: center;
-      }
-
-      label {
-         display: block;
-         margin-bottom: 5px;
-      }
-
-      input[type="text"],
-      input[type="number"],
-      button {
-         margin-bottom: 10px;
-         padding: 8px;
-         border: none;
-      }
-
-      input[type="text"],
-      input[type="number"] {
-         width: 100%;
-         background-color: #444;
-         color: #eee;
-      }
-
-      button {
-         width: 100%;
-         background-color: #4CAF50;
+      .myForm {
+         background-color: rgba(0, 0, 0, 0.5) !important;
+         padding: 15px !important;
+         border-radius: 15px !important;
          color: white;
-         cursor: pointer;
-         transition: background-color 0.3s ease;
+
       }
 
-      button:hover {
-         background-color: #45a049;
+      input {
+         border-radius: 0 15px 15px 0 !important;
+
       }
 
-      #result {
-         margin-top: 20px;
-         font-weight: bold;
+      input:focus {
+         outline: none;
+         box-shadow: none !important;
+         border: 1px solid #ccc !important;
+
+      }
+
+      .br-15 {
+         border-radius: 15px 0 0 15px !important;
+      }
+
+      #add_more {
+         color: white !important;
+         background-color: #fa8231 !important;
+         border-radius: 15px !important;
+         border: 0 !important;
+
+      }
+
+      #remove_more {
+         color: white !important;
+         background-color: #fc5c65 !important;
+         border-radius: 15px !important;
+         border: 0 !important;
+         display: none;
+
+      }
+
+      .submit_btn {
+         border-radius: 15px !important;
+         background-color: #95c714 !important;
+         border: 0 !important;
+      }
+
+
+      .suggestions-container {
+         max-height: 200px;
+         overflow-y: auto; 
+      }
+
+      #suggestions {
+         min-width: 198px;
+         border-radius: 4px;
+         z-index: 1;
       }
 
       .calculator {
@@ -64,53 +83,80 @@
          background-color: #fff;
       }
 
-      .suggestions-container {
-         max-height: 200px;
-         /* Set a maximum height */
-         overflow-y: auto;
-         /* Enable vertical scrolling */
-         border: 1px solid #ccc;
-         border-radius: 4px;
-         background-color: #fff;
-      }
-
       .suggestion {
          cursor: pointer;
          padding: 5px;
+         color: #757373;
       }
 
       .suggestion:hover {
-         background-color: #eee;
+         background-color: #646060;
+         color: #fffdfd;
+      }
+
+      #result {
+         margin-top: 20px;
+         font-weight: bold;
       }
    </style>
 
 
 </head>
 
-<body class="d-flex justify-content-center align-items-center min-vh-100">
-   <div class="container-lg">
-      <div class="calculator p-4">
-         <h1 class="text-center mb-4">Stock Intrinsic Value Calculator</h1>
-         <div class="mb-3">
-            <label for="stockSymbol" class="form-label">Stock Symbol:</label>
-            <input type="text" class="form-control" id="stockSymbol" placeholder="Enter stock symbol" required>
+<body>
+   <dvi class="container h-100">
+      <div class="d-flex justify-content-center">
+         <div class="card mt-5 col-md-4 animated bounceInDown myForm">
+            <div class="card-header">
+               <h4>Stock Intrinsic Value Calculator</h4>
+            </div>
+            <div class="card-body">
+               <form>
+                  <div id="dynamic_container">
+                     <div class="input-group">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text br-15"><i class="fas fa-building"></i></span>
+                        </div>
+                        <input type="text" class="form-control" id="stockSymbol" placeholder="Enter stock symbol"
+                           required>
+                     </div>
+                     <div class="mb-3 suggestions-container">
+                        <div id="suggestions"
+                           class="position-absolute bg-light border border-secondary rounded-3"></div>
+                     </div>
+                     <button onclick="fetchStockData()" class="btn btn-primary btn-sm">Click to Prefill EPS, GR and DR
+                        field from Online</button>
+                     <div class="input-group mt-3">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text br-15">Earnings per Share (EPS)</span>
+                        </div>
+                        <input type="number" id="eps" placeholder="Enter EPS here..." class="form-control" step="0.01"
+                           min="0" required>
+                     </div>
+                     <div class="input-group mt-3">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text br-15">Growth Rate (%)</span>
+                        </div>
+                        <input type="number" id="growthRate" placeholder="Enter Growth Rate here..." class="form-control"
+                           step="0.1" min="0" required>
+                     </div>
+                     <div class="input-group mt-3">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text br-15">Discount Rate (%)</span>
+                        </div>
+                        <input type="number" id="discountRate" placeholder="Enter Discount Rate here..."
+                           class="form-control" step="0.1" min="0" required>
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div class="card-footer">
+               <button class="btn btn-success submit_btn" onclick="calculateIntrinsicValue()">Calculate</button>
+               <p id="result"></p>
+            </div>
          </div>
-         <div class="mb-3 position-relative">
-            <div id="suggestions" class="position-absolute bg-light border border-secondary rounded-3 d-none"></div>
-         </div>
-         <button onclick="fetchStockData()" class="btn btn-primary">Get Intrinsic Value</button>
-         <div id="inputs" style="display: none;">
-            <label for="eps">Earnings per Share (EPS):</label>
-            <input type="number" id="eps" step="0.01" min="0" required><br>
-            <label for="growthRate">Growth Rate (%) (set according to your model):</label>
-            <input type="number" id="growthRate" step="0.1" min="0" required><br>
-            <label for="discountRate">Discount Rate (%) (set according to your model):</label>
-            <input type="number" id="discountRate" step="0.1" min="0" required><br>
-            <button onclick="calculateIntrinsicValue()">Calculate</button>
-         </div>
-         <p id="result"></p>
       </div>
-   </div>
+   </dvi>
 
    <script>
 
@@ -179,8 +225,6 @@
             document.getElementById('eps').value = annualEarnings;
             document.getElementById('growthRate').value = growthRate * 100;
             document.getElementById('discountRate').value = discountRate * 100;
-
-            document.getElementById('inputs').style.display = 'block';
          } catch (error) {
             console.error('Error fetching data:', error);
             document.getElementById('result').textContent = `Failed to fetch data. Please try again. ${data?.Information}`;
