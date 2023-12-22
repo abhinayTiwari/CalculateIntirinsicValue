@@ -3,6 +3,8 @@
 
 <head>
    <title>Stock Intrinsic Value Calculator</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
       integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
@@ -68,7 +70,7 @@
 
       .suggestions-container {
          max-height: 200px;
-         overflow-y: auto; 
+         overflow-y: auto;
       }
 
       #suggestions {
@@ -105,57 +107,63 @@
 
 <body>
    <dvi class="container h-100">
-      <div class="d-flex justify-content-center">
-         <div class="card mt-5 col-md-4 animated bounceInDown myForm">
-            <div class="card-header">
-               <h4>Stock Intrinsic Value Calculator</h4>
-            </div>
-            <div class="card-body">
-               <form>
-                  <div id="dynamic_container">
-                     <div class="input-group">
-                        <div class="input-group-prepend">
-                           <span class="input-group-text br-15"><i class="fas fa-building"></i></span>
-                        </div>
-                        <input type="text" class="form-control" id="stockSymbol" placeholder="Enter stock symbol"
-                           required>
-                     </div>
-                     <div class="mb-3 suggestions-container">
-                        <div id="suggestions"
-                           class="position-absolute bg-light border border-secondary rounded-3"></div>
-                     </div>
-                     <button onclick="fetchStockData()" class="btn btn-primary btn-sm">Click to Prefill EPS, GR and DR
-                        field from Online</button>
-                     <div class="input-group mt-3">
-                        <div class="input-group-prepend">
-                           <span class="input-group-text br-15">Earnings per Share (EPS)</span>
-                        </div>
-                        <input type="number" id="eps" placeholder="Enter EPS here..." class="form-control" step="0.01"
-                           min="0" required>
-                     </div>
-                     <div class="input-group mt-3">
-                        <div class="input-group-prepend">
-                           <span class="input-group-text br-15">Growth Rate (%)</span>
-                        </div>
-                        <input type="number" id="growthRate" placeholder="Enter Growth Rate here..." class="form-control"
-                           step="0.1" min="0" required>
-                     </div>
-                     <div class="input-group mt-3">
-                        <div class="input-group-prepend">
-                           <span class="input-group-text br-15">Discount Rate (%)</span>
-                        </div>
-                        <input type="number" id="discountRate" placeholder="Enter Discount Rate here..."
-                           class="form-control" step="0.1" min="0" required>
-                     </div>
+      <div class="row justify-content-center">
+         <div class="col-sm-12 col-md-6">
+            <div class="d-flex justify-content-center">
+               <div class="card mt-5 col-xs-12 animated bounceInDown myForm">
+                  <div class="card-header">
+                     <h4>Stock Intrinsic Value Calculator</h4>
                   </div>
-               </form>
-            </div>
-            <div class="card-footer">
-               <button class="btn btn-success submit_btn" onclick="calculateIntrinsicValue()">Calculate</button>
-               <p id="result"></p>
+                  <div class="card-body">
+                     <form>
+                        <div id="dynamic_container">
+                           <div class="input-group">
+                              <div class="input-group-prepend">
+                                 <span class="input-group-text br-15"><i class="fas fa-building"></i></span>
+                              </div>
+                              <input type="text" class="form-control" id="stockSymbol" placeholder="Enter stock symbol"
+                                 required>
+                           </div>
+                           <div class="mb-3 suggestions-container">
+                              <div id="suggestions"
+                                 class="position-absolute bg-light border border-secondary rounded-3"></div>
+                           </div>
+                           <button onclick="fetchStockData()" class="btn btn-primary btn-sm">Click to prefill below
+                              fields</button>
+                           <div class="input-group mt-3">
+                              <div class="input-group-prepend">
+                                 <span class="input-group-text br-15">Earnings per Share (EPS)</span>
+                              </div>
+                              <input type="number" id="eps" placeholder="Enter EPS here..." class="form-control"
+                                 step="0.01" min="0" required>
+                           </div>
+                           <div class="input-group mt-3">
+                              <div class="input-group-prepend">
+                                 <span class="input-group-text br-15">Growth Rate (%)</span>
+                              </div>
+                              <input type="number" id="growthRate" placeholder="Enter Growth Rate here..."
+                                 class="form-control" step="0.1" min="0" required>
+                           </div>
+                           <div class="input-group mt-3">
+                              <div class="input-group-prepend">
+                                 <span class="input-group-text br-15">Discount Rate (%)</span>
+                              </div>
+                              <input type="number" id="discountRate" placeholder="Enter Discount Rate here..."
+                                 class="form-control" step="0.1" min="0" required>
+                           </div>
+                        </div>
+                     </form>
+                  </div>
+                  <div class="card-footer">
+                     <button class="btn btn-success submit_btn" onclick="calculateIntrinsicValue()">Calculate</button>
+                     <p id="result"></p>
+                  </div>
+               </div>
             </div>
          </div>
       </div>
+
+
    </dvi>
 
    <script>
@@ -260,6 +268,15 @@
          const resultElement = document.getElementById('result');
          resultElement.textContent = `The intrinsic value of the stock is: $${isFinite(intrinsicValue) ? intrinsicValue.toFixed(2) : 'N/A (Check Rates)'} `;
       }
+
+      console.log("           _     _     _                   ");
+      console.log("     /\   | |   | |   (_)                  ");
+      console.log("    /  \  | |__ | |__  _ _ __   __ _ _   _ ");
+      console.log("   / /\ \ | '_ \| '_ \| | '_ \ / _` | | | |");
+      console.log("  / ____ \| |_) | | | | | | | | (_| | |_| |");
+      console.log(" /_/    \_\_.__/|_| |_|_|_| |_|\__,_|\__, |");
+      console.log("                                      __/ |");
+      console.log("                                     |___/ ");
    </script>
 </body>
 
